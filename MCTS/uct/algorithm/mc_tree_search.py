@@ -1,27 +1,22 @@
-
-import time
 from math import sqrt, log
 
-from PyQt5.QtWidgets import QApplication
-
-import uct.algorithm.enums as Enums
-import uct.algorithm.mc_node_utils as NodeUtils
-from main_application.gui_settings import MonteCarloSettings
-from uct.algorithm.mc_simulation_result import MonteCarloSimulationResult
-from uct.algorithm.mc_tree import MonteCarloTree
-from uct.game.base_game_move import BaseGameMove
-from uct.game.base_game_state import BaseGameState
-from utils.custom_event import CustomEvent
+import MCTS.uct.algorithm.enums as Enums
+import MCTS.uct.algorithm.mc_node_utils as NodeUtils
+from MCTS.uct.algorithm.mc_simulation_result import MonteCarloSimulationResult
+from MCTS.uct.algorithm.mc_tree import MonteCarloTree
+from MCTS.uct.game.base_game_move import BaseGameMove
+from MCTS.uct.game.base_game_state import BaseGameState
+from mcts_settings import MonteCarloSettings
 
 
 class MonteCarloTreeSearch:
     """
     Class responsible for executing four steps of the Monte Carlo Tree Search method in an iterative way.
     """
+
     def __init__(self, tree: MonteCarloTree, settings: MonteCarloSettings):
         self.tree = tree
         self.settings = settings
-        self.iteration_performed = CustomEvent()
         self.iterations = 0
 
     def calculate_next_move(self) -> (BaseGameMove, BaseGameState):
@@ -33,44 +28,8 @@ class MonteCarloTreeSearch:
 		Returns:
 			tuple of (BaseGameMove, BaseGameState, MonteCarloNode) of the chosen move        
 		"""
-        if self.settings.limit_iterations:
-            return self._calculate_next_move_iterations_limited()
-        else:
-            return self._calculate_next_move_time_limited()
-
-    def _calculate_next_move_iterations_limited(self):
-        """
-        Calculates the best move for a computer using UCT algorithm for a given number of iterations.
-        After the calculation an event that signalizes the end of iteration is triggered.
-
-		Returns:
-			tuple of (BaseGameMove, BaseGameState, MonteCarloNode) of the chosen move        
-		"""
         while self.iterations < self.settings.max_iterations:
             self._perform_iteration()
-            self.iteration_performed.fire(self, self.iterations / self.settings.max_iterations)
-        return self._select_result_node()
-
-    def _calculate_next_move_time_limited(self):
-        """
-        Calculates the best move for a computer using UCT algorithm for a given amount of time.
-        After the calculation an event that signalizes the end of iteration is triggered.
-        When the time is over during calculation, the last iteration is calculated to the end.
-
-		Returns:
-			tuple of (BaseGameMove, BaseGameState, MonteCarloNode) of the chosen move        
-		"""
-        start_time = time.time()
-        elapsed_time_ms = 0
-        max_time = self.settings.get_internal_time()
-        progress_fraction = 0
-        while elapsed_time_ms < max_time:
-            self._perform_iteration()
-            elapsed_time_ms = (time.time() - start_time) * 1000
-            progress_fraction = elapsed_time_ms / max_time
-            self.iteration_performed.fire(self, progress_fraction)
-        if progress_fraction != 1:
-            self.iteration_performed.fire(self, 1)
         return self._select_result_node()
 
     def _perform_iteration(self):
@@ -81,7 +40,6 @@ class MonteCarloTreeSearch:
 		Returns:
 			None        
 		"""
-        QApplication.processEvents()
         promising_node = self._selection(self.tree.root)
         self._expansion(promising_node)
 
@@ -162,8 +120,6 @@ class MonteCarloTreeSearch:
             tmp_state.perform_random_move()
             tmp_phase = tmp_state.phase
             moves_counter += 1
-            if self.settings.limit_moves and moves_counter >= self.settings.max_moves_per_iteration:
-                break
         return MonteCarloSimulationResult(tmp_state)
 
     def _backpropagation(self, leaf, simulation_result: MonteCarloSimulationResult):
@@ -218,5 +174,4 @@ class MonteCarloTreeSearch:
                 return uct_val
 
         parent_visit = node.details.visits_count
-        return max(node.children, key=lambda n: uct_value(n, parent_visit, self.settings.exploration_parameter))
-
+        return max(node.children, key=lambda n: uct_value(n, parent_visit, self.settings.exploration_factor))

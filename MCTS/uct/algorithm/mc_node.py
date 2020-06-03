@@ -1,7 +1,4 @@
-
-import visualisation_algorithm.mc_node_vis_details as Vis
-from uct.algorithm.mc_node_details import MonteCarloNodeDetails
-
+from MCTS.uct.algorithm.mc_node_details import MonteCarloNodeDetails
 
 class MonteCarloNode:
     """
@@ -72,7 +69,6 @@ class MonteCarloNode:
         node = MonteCarloNode()
         node.id = MonteCarloNode.generate_next_id()
         node.move = move
-        node.vis_details = Vis.MonteCarloNodeVisualisationDetails(node)
         node.details = MonteCarloNodeDetails()
         node.children = []
         node.parent = None

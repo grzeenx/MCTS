@@ -1,8 +1,8 @@
-
 class MonteCarloNodeDetails:
     """
     Class is responsible for storing information about Monte Carlo Tree Search properties of the node.
     """
+
     def __init__(self):
         self.state_name = ""
         self.move_name = ""
@@ -32,4 +32,3 @@ class MonteCarloNodeDetails:
 			None        
 		"""
         self.visits_count = self.visits_count + 1
-

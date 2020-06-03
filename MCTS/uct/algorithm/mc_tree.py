@@ -1,13 +1,13 @@
-
-from uct.algorithm.mc_node import MonteCarloNode
-from uct.game.base_game_move import BaseGameMove
-from uct.game.base_game_state import BaseGameState
+from MCTS.uct.algorithm.mc_node import MonteCarloNode
+from MCTS.uct.game.base_game_move import BaseGameMove
+from MCTS.uct.game.base_game_state import BaseGameState
 
 
 class MonteCarloTree:
     """
     Class stores the information of the root of the Monte Carlo tree and about game state, and visualization data.
     """
+
     def __init__(self, game_state: BaseGameState = None, root: MonteCarloNode = None):
         if game_state is not None:
             self.root = MonteCarloNode.create_root()

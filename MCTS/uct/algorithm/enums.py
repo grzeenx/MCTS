@@ -1,4 +1,3 @@
-
 from enum import Enum
 
 
@@ -23,4 +22,3 @@ def get_player_win(player):
         return GamePhase.PLAYER2_WON
     else:
         raise Exception("Unknown player index")
-

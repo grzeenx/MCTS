@@ -1,16 +1,15 @@
-
-from main_application.gui_settings import MonteCarloSettings
-from uct.algorithm.mc_tree import MonteCarloTree
-from uct.algorithm.mc_tree_search import MonteCarloTreeSearch
-from uct.game.base_game_move import BaseGameMove
-from uct.game.base_game_state import BaseGameState
-from utils.custom_event import CustomEvent
+from MCTS.uct.algorithm.mc_tree import MonteCarloTree
+from MCTS.uct.algorithm.mc_tree_search import MonteCarloTreeSearch
+from MCTS.uct.game.base_game_move import BaseGameMove
+from MCTS.uct.game.base_game_state import BaseGameState
+from mcts_settings import MonteCarloSettings
 
 
 class MonteCarloGameManager:
     """
     CLass is responsible for performing UCT algorithm moves and keeping information about game state and settings.
     """
+
     def __init__(self, game_state: BaseGameState, settings: MonteCarloSettings):
         self.current_state = game_state
         self.tree = MonteCarloTree(self.current_state)
@@ -18,7 +17,6 @@ class MonteCarloGameManager:
         self.first_move = True
         self.previous_move_calculated = None
         self.chosen_node = None
-        self.iteration_performed = CustomEvent()
 
     def notify_move_performed(self, move: BaseGameMove):
         """
@@ -58,12 +56,7 @@ class MonteCarloGameManager:
 			calculated move, BaseGameMove object        
 		"""
         mcts = MonteCarloTreeSearch(self.tree, self.settings)
-        mcts.iteration_performed += self._handle_iteration_performed
         move, state, best_node = mcts.calculate_next_move()
         self.chosen_node = best_node
         self.previous_move_calculated = move
         return move
-
-    def _handle_iteration_performed(self, sender, earg):
-        self.iteration_performed.fire(self, earg)
-
