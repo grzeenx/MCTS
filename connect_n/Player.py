@@ -7,6 +7,7 @@ from mcts_settings import MonteCarloSettings
 class Player:
     def move(self, board, possible_moves):
         # !!! TUTAJ ZA POMOCA BOARDA POWINNISMY JAKOS POBRAC CONNECT_N_STATE
+        # w boardzie jest caly stan a go przekazujemy tutaj
 
         # mcts = MonteCarloTreeSearch(MonteCarloTree(current_state), MonteCarloSettings())
         # move, state, best_node = mcts.calculate_next_move()

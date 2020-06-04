@@ -10,4 +10,5 @@ class ConnectNMove(BaseGameMove):
         pass
 
     def move_equal(self, move) -> bool:
+        # TU NIE WIEM CO MAM POROWNYWAC
         pass
