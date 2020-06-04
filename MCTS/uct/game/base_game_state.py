@@ -1,13 +1,12 @@
-
 import abc
-
-from uct.algorithm.enums import GamePhase
+from MCTS.uct.algorithm.enums import GamePhase
 
 
 class BaseGameState(abc.ABC):
     """
     Abstract class for state implementation and manipulation of any game that meets UCT algorithm conditions.
     """
+
     def __init__(self):
         self.phase = GamePhase.IN_PROGRESS
         self.current_player = 1
@@ -68,4 +67,3 @@ class BaseGameState(abc.ABC):
             self.current_player = 2
         else:
             self.current_player = 1
-
