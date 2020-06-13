@@ -5,9 +5,10 @@ class ConnectNMove(BaseGameMove):
     """
     Class is implementing BaseGameMove class methods in relation to mancala game.
     """
-    def __init__(self, moves_sequence: list, player):
+    def __init__(self, move_number, player):
         super().__init__()
-        pass
+        self.move_number = move_number
+        self.player = player
 
     def move_equal(self, move) -> bool:
         # TU NIE WIEM CO MAM POROWNYWAC

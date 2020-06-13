@@ -15,7 +15,7 @@ def get_random_child(node: MonteCarloNode):
     if not node.has_children():
         raise Exception("Node does not have any child nodes")
     else:
-        child_index = int(len(node.children) * random.random())
+        child_index = int(len(node.children) * random())
         return node.children[child_index]
 
 

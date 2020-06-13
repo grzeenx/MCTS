@@ -1,3 +1,5 @@
+from MCTS.uct.algorithm.enums import GamePhase
+
 class Board:
     '''Class for the board, it cointans the players'''
 
@@ -24,6 +26,7 @@ class Board:
         # 0  - empty field, 1 - player_1's token, 2 - player_2's token
         self.board = [[0 for col in range(self.n_cols)] for row in range(self.n_rows)]
         self.result = 0
+        self.phase = GamePhase.IN_PROGRESS
 
     def field_content(self, row, col):
         '''
@@ -73,7 +76,7 @@ class Board:
         :return: False if game is still on, True if game is over
         '''
         possible_moves = self.give_possible_moves()
-        move = (self.active_player()).move(self.board.copy(), possible_moves)
+        move = (self.active_player()).move(self, possible_moves)
         if not self.put_token(move):
             raise Exception('move not possible!')
         self.whos_turn_is_now = self.opposite_player(self.whos_turn_is_now)
@@ -98,8 +101,10 @@ class Board:
         :return: True if is over, False if is on
         '''
         if self.check_rows() or self.check_columns() or self.check_diagonals():
+            self.phase = GamePhase.PLAYER1_WON if self.whos_turn_is_now == 2 else GamePhase.PLAYER2_WON
             return True
         if self.give_possible_moves() == []:
+            self.phase = GamePhase.DRAW
             return True
         return False
 
@@ -182,3 +187,15 @@ class Board:
             last = 0
             length = 1
         return False
+
+    def deep_copy(self):
+        rc = Board(8, 8, 4)
+        rc.current_player = self.whos_turn_is_now
+
+        # self.board = [[0 for col in range(self.n_cols)] for row in range(self.n_rows)]
+        for i in range(self.n_rows):
+            for j in range(self.n_cols):
+                rc.board[i][j] = self.board[i][j]
+
+        rc.phase = self.phase
+        return rc

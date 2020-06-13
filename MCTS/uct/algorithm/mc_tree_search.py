@@ -98,7 +98,7 @@ class MonteCarloTreeSearch:
         node_state = self.tree.retrieve_node_game_state(node)
         possible_moves = node_state.get_all_possible_moves()
         for move in possible_moves:
-            node.add_child_by_move(move[0], state_desc=move[1])
+            node.add_child_by_move(move)
 
     def _simulation(self, leaf) -> MonteCarloSimulationResult:
         """
@@ -146,6 +146,7 @@ class MonteCarloTreeSearch:
         tmp_node = leaf
         while tmp_node != self.tree.root:
             tmp_node.details.mark_visit()
+            # TODO
             tmp_current_player = tmp_node.move.player
             if leaf_player == tmp_current_player:
                 tmp_node.details.add_score(reward)

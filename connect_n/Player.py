@@ -9,10 +9,9 @@ class Player:
         # !!! TUTAJ ZA POMOCA BOARDA POWINNISMY JAKOS POBRAC CONNECT_N_STATE
         # w boardzie jest caly stan a go przekazujemy tutaj
 
-        # mcts = MonteCarloTreeSearch(MonteCarloTree(current_state), MonteCarloSettings())
-        # move, state, best_node = mcts.calculate_next_move()
-        # self.chosen_node = best_node
-        # self.previous_move_calculated = move
-        # return move
+        current_state = ConnectNState(board)
+        mcts = MonteCarloTreeSearch(MonteCarloTree(current_state), MonteCarloSettings())
+        move, state, best_node = mcts.calculate_next_move()
+        return move.move_number
 
-        return possible_moves[random.randint(0,len(possible_moves)-1)]
+        # return possible_moves[random.randint(0,len(possible_moves)-1)]

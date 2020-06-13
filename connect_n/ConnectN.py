@@ -10,7 +10,7 @@ class ConnectN(arcade.Window):
 
     def __init__(self, width, height):
         super().__init__(width, height)
-        self.board = Board(8, 8, 4, Player())
+        self.board = Board(8, 8, 4, None, Player())
         arcade.set_background_color(arcade.color.BLUE_BELL)
 
         self.image_paths = [os.path.join("connect_n", "graphics", "field.jpg"),
@@ -53,6 +53,7 @@ class ConnectN(arcade.Window):
         """ All the logic to move, and the game logic goes here. """
         if not self.game_over:
             if self.board.active_player() is not None:
+                # AI
                 self.game_over = self.board.play()
                 token = arcade.Sprite(self.image_paths[self.board.opposite_player(self.board.whos_turn_is_now)],
                                       self.SPRITE_SCALING_COIN)
@@ -60,6 +61,7 @@ class ConnectN(arcade.Window):
                 token.center_y = self.board.last_move[0] * self.field_height + self.field_height / 2
                 self.token_list.append(token)
             elif self.move is not None:
+                # HUMAN
                 self.game_over = self.board.play_human(self.move)
                 token = arcade.Sprite(self.image_paths[self.board.opposite_player(self.board.whos_turn_is_now)],
                                       self.SPRITE_SCALING_COIN)
