@@ -141,7 +141,7 @@ class MonteCarloTreeSearch:
         elif simulation_result.phase == Enums.GamePhase.DRAW:
             reward = 0.5
         else:
-            reward = simulation_result.get_reward(leaf_player)
+            reward = 0
 
         tmp_node = leaf
         while tmp_node != self.tree.root:
