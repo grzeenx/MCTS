@@ -10,7 +10,8 @@ class Player:
         # w boardzie jest caly stan a go przekazujemy tutaj
 
         current_state = ConnectNState(board)
-        mcts = MonteCarloTreeSearch(MonteCarloTree(current_state), MonteCarloSettings())
+        monte_carlo_tree = MonteCarloTree(current_state)
+        mcts = MonteCarloTreeSearch(monte_carlo_tree, MonteCarloSettings())
         move, state, best_node = mcts.calculate_next_move()
         return move.move_number
 

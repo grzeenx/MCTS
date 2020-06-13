@@ -41,7 +41,11 @@ class MonteCarloTreeSearch:
 			None        
 		"""
         promising_node = self._selection(self.tree.root)
-        self._expansion(promising_node)
+        expansion_possible, state = self._expansion(promising_node)
+        if not expansion_possible:
+            simulation_result = MonteCarloSimulationResult(state)
+            self._backpropagation(promising_node, simulation_result)
+            return
 
         if promising_node.has_children():
             leaf_to_explore = NodeUtils.get_random_child(promising_node)
@@ -97,8 +101,14 @@ class MonteCarloTreeSearch:
 		"""
         node_state = self.tree.retrieve_node_game_state(node)
         possible_moves = node_state.get_all_possible_moves()
+
+        if node_state.board.phase != Enums.GamePhase.IN_PROGRESS:
+            return False, node_state
+
         for move in possible_moves:
             node.add_child_by_move(move)
+
+        return True, node_state
 
     def _simulation(self, leaf) -> MonteCarloSimulationResult:
         """
@@ -165,13 +175,16 @@ class MonteCarloTreeSearch:
 		Returns:
 			MonteCarloNode node with the best UCT calculated value        
 		"""
+
         def uct_value(n, p_visit, exp_par):
             visits = n.details.visits_count
             win_score = n.details.win_score
+            average_prize = n.details.average_prize if self.tree.game_state.current_player == \
+                                                       n.move.player else -n.details.average_prize
             if visits == 0:
                 return 10000000  # TODO: won't 2 be enough?
             else:
-                uct_val = (win_score / visits) + exp_par * sqrt(log(p_visit) / visits)
+                uct_val = average_prize + exp_par * sqrt(log(p_visit) / visits)
                 return uct_val
 
         parent_visit = node.details.visits_count
