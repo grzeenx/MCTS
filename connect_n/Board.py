@@ -190,7 +190,7 @@ class Board:
 
     def deep_copy(self):
         rc = Board(8, 8, 4)
-        rc.current_player = self.whos_turn_is_now
+        rc.whos_turn_is_now = self.whos_turn_is_now
 
         # self.board = [[0 for col in range(self.n_cols)] for row in range(self.n_rows)]
         for i in range(self.n_rows):

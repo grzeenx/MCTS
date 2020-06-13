@@ -10,11 +10,12 @@ class ConnectNState(BaseGameState):
     def __init__(self, board: Board):
         super().__init__()
         self.board = board
+        self.current_player = board.whos_turn_is_now
 
     def get_all_possible_moves(self):
         possible_moves = []
         for value in self.board.give_possible_moves():
-            possible_moves.append(ConnectNMove(value, self.board.whos_turn_is_now))
+            possible_moves.append(ConnectNMove(value, self.current_player))
         return possible_moves
 
     def perform_random_move(self):
