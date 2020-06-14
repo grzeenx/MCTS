@@ -29,10 +29,11 @@ class ConnectN(arcade.Window):
         self.chosen_col_id = 0
 
     def setup(self):
-        self.arrow = arcade.Sprite(self.image_paths[3], self.SPRITE_SCALING_COIN)
-        self.arrow.center_y = self.board.n_rows * self.field_height
-        self.arrow.center_x = self.field_width / 2
 
+        self.help_coin = arcade.Sprite(self.image_paths[1], self.SPRITE_SCALING_COIN)
+        self.help_coin.alpha = 100
+        self.help_coin.center_y = self.board.n_rows * self.field_height
+        self.help_coin.center_x = self.field_width / 2
 
         self.field_list = arcade.SpriteList()
         for i in range(self.board.n_rows):
@@ -49,15 +50,20 @@ class ConnectN(arcade.Window):
         arcade.start_render()
         self.field_list.draw()
         self.token_list.draw()
-        self.arrow.draw()
-        self.output = f"Player {self.board.result} won" if self.game_over else ""
-        arcade.draw_text(self.output, (self.board.n_rows/2-1) * self.field_height, (self.board.n_cols) * self.field_width, arcade.color.BLACK, 24)
+        self.help_coin.draw()
+        # print score
+        self.output = f"PLAYER {self.board.result} WON!" if self.game_over else ""
+        arcade.draw_text(self.output, (self.board.n_cols / 2 - 0.5) * self.field_width,
+                         (self.board.n_rows) * self.field_height, arcade.color.RED, 14, bold=True)
 
     def update(self, delta_time):
         """ All the logic to move, and the game logic goes here. """
+        # help coin
+        self.help_coin.center_x = self.field_width * (self.chosen_col_id + 0.5)
+        self.help_coin.center_y = self.board.find_row(self.chosen_col_id) * self.field_height + self.field_height / 2 if self.board.find_row(self.chosen_col_id) < self.board.n_rows else -10000
 
-        # arrow
-        self.arrow.center_x = self.field_width * (self.chosen_col_id + 0.5)
+        if   self.game_over :
+            self.help_coin.alpha=0
 
         if not self.game_over:
             if self.board.active_player() is not None:
@@ -69,6 +75,7 @@ class ConnectN(arcade.Window):
                 token.center_y = self.board.last_move[0] * self.field_height + self.field_height / 2
                 self.token_list.append(token)
             elif self.move is not None:
+
                 # HUMAN
                 self.game_over = self.board.play_human(self.move)
                 token = arcade.Sprite(self.image_paths[self.board.opposite_player(self.board.whos_turn_is_now)],
@@ -77,7 +84,6 @@ class ConnectN(arcade.Window):
                 token.center_y = self.board.last_move[0] * self.field_height + self.field_height / 2
                 self.token_list.append(token)
                 self.move = None
-
 
     def on_key_release(self, key, modifiers):
         """Called when the user releases a key. """
