@@ -8,8 +8,8 @@ from connect_n.Player import Player
 class ConnectN(arcade.Window):
     """ Main application class. """
 
-    def __init__(self, width, height):
-        super().__init__(width, height)
+    def __init__(self, width, height, title):
+        super().__init__(width, height, title)
         self.board = Board(8, 8, 4, None, Player())
         arcade.set_background_color(arcade.color.BLUE_BELL)
 
@@ -30,8 +30,10 @@ class ConnectN(arcade.Window):
 
     def setup(self):
         self.arrow = arcade.Sprite(self.image_paths[3], self.SPRITE_SCALING_COIN)
-        self.arrow.center_y = -100
-        self.arrow.center_x = -100
+        self.arrow.center_y = self.board.n_rows * self.field_height
+        self.arrow.center_x = self.field_width / 2
+
+
         self.field_list = arcade.SpriteList()
         for i in range(self.board.n_rows):
             for j in range(self.board.n_cols):
@@ -48,9 +50,15 @@ class ConnectN(arcade.Window):
         self.field_list.draw()
         self.token_list.draw()
         self.arrow.draw()
+        self.output = f"Player {self.board.result} won" if self.game_over else ""
+        arcade.draw_text(self.output, (self.board.n_rows/2-1) * self.field_height, (self.board.n_cols) * self.field_width, arcade.color.BLACK, 24)
 
     def update(self, delta_time):
         """ All the logic to move, and the game logic goes here. """
+
+        # arrow
+        self.arrow.center_x = self.field_width * (self.chosen_col_id + 0.5)
+
         if not self.game_over:
             if self.board.active_player() is not None:
                 # AI
@@ -69,6 +77,7 @@ class ConnectN(arcade.Window):
                 token.center_y = self.board.last_move[0] * self.field_height + self.field_height / 2
                 self.token_list.append(token)
                 self.move = None
+
 
     def on_key_release(self, key, modifiers):
         """Called when the user releases a key. """
