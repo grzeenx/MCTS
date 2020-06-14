@@ -1,4 +1,5 @@
 from math import sqrt, log
+import numpy as np
 
 import MCTS.uct.algorithm.enums as Enums
 import MCTS.uct.algorithm.mc_node_utils as NodeUtils
@@ -182,10 +183,34 @@ class MonteCarloTreeSearch:
             average_prize = n.details.average_prize if self.tree.game_state.current_player == \
                                                        n.move.player else -n.details.average_prize
             if visits == 0:
-                return 10000000  # TODO: won't 2 be enough?
+                return 10000000
             else:
                 uct_val = average_prize + exp_par * sqrt(log(p_visit) / visits)
                 return uct_val
 
+        def ucb_tuned_value(n, p_visit):
+            visits = n.details.visits_count
+            win_score = n.details.win_score
+            average_prize = n.details.average_prize if self.tree.game_state.current_player == \
+                                                       n.move.player else -n.details.average_prize
+            if visits == 0:
+                return 10000000
+            else:
+                variance = np.var(n.details.scores)
+                factor = variance + sqrt(2 * log(p_visit) / visits)
+                ucb_factor = sqrt(min(0.25, factor))
+                uct_val = 0*average_prize + ucb_factor * sqrt(log(p_visit) / visits)
+                return uct_val
+
         parent_visit = node.details.visits_count
-        return max(node.children, key=lambda n: uct_value(n, parent_visit, self.settings.exploration_factor))
+        if self.settings.mcts_variant == Enums.MCTSVariant.UCT:
+            best_child_node = max(node.children,
+                                  key=lambda n: uct_value(n, parent_visit, self.settings.exploration_factor))
+        elif self.settings.mcts_variant == Enums.MCTSVariant.UCB1_Tuned:
+            best_child_node = max(node.children,
+                                  key=lambda n: ucb_tuned_value(n, parent_visit))
+        elif self.settings.mcts_variant == Enums.MCTSVariant.RAVE:
+            pass
+        else:
+            raise Exception('Undefined node selection method')
+        return best_child_node

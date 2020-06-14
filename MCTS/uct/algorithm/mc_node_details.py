@@ -7,9 +7,9 @@ class MonteCarloNodeDetails:
         self.state_name = ""
         self.move_name = ""
         self.visits_count = 0
-        self.visits_count_pre_modified = 0
         self.win_score = 0
         self.average_prize = 0
+        self.scores = []
 
     def add_score(self, amount):
         """
@@ -22,6 +22,7 @@ class MonteCarloNodeDetails:
 			None        
 		"""
         self.win_score = self.win_score + amount
+        self.scores.append(amount)
         self.average_prize = self.win_score / self.visits_count
 
     def mark_visit(self):
