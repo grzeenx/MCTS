@@ -1,5 +1,4 @@
 import random
-
 from connect_n.Player import Player
 
 

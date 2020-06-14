@@ -1,4 +1,3 @@
-import random
 from MCTS.uct.algorithm.mc_tree import MonteCarloTree
 from MCTS.uct.algorithm.mc_tree_search import MonteCarloTreeSearch
 from connect_n.algotirhm_relay.connect_n_state import ConnectNState
@@ -15,4 +14,3 @@ class Player:
         move, state, best_node = mcts.calculate_next_move()
         return move.move_number
 
-        # return possible_moves[random.randint(0,len(possible_moves)-1)]
