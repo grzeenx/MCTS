@@ -1,4 +1,5 @@
 from connect_n.ConnectN import ConnectN
+from connect_n.HeuristicPlayer import HeuristicPlayer
 from connect_n.Player import Player
 
 SCREEN_WIDTH = 700
