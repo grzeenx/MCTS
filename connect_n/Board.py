@@ -1,5 +1,6 @@
 from MCTS.uct.algorithm.enums import GamePhase
 
+
 class Board:
     '''Class for the board, it cointans the players'''
 
@@ -111,7 +112,7 @@ class Board:
     def check_rows(self):
         '''
         Checks if in any row is a sequence. sets the result if some player wins.
-        :return: True if there is, False if issnt
+        :return: True if there is, False if isnt
         '''
         length = 1
         last = 0
@@ -188,10 +189,130 @@ class Board:
             length = 1
         return False
 
+    def count_rows(self, player_num):
+        '''
+        Counts the longest sequence in rows of player_num
+        :return: number
+        '''
+        max_len = 0
+        length = 1
+        last = 0
+        for row in self.board:
+            for field in row:
+                if field == last and field == player_num:
+                    length += 1
+                elif field == player_num:
+                    length = 1
+                else:
+                    length = 0
+                if last == player_num and length == self.n_to_win:
+                    return self.n_to_win
+                elif max_len < length:
+                    max_len = length
+                last = field
+            last = 0
+            length = 1
+        return max_len
+
+    def count_columns(self, player_num):
+        '''
+        Counts the longest sequence in columns of player_num
+        :return: number
+        '''
+        max_len = 0
+        length = 1
+        last = 0
+        for col_i in range(self.n_cols):
+            for row_i in range(self.n_rows):
+                current_field = self.field_content(row_i, col_i)
+                if current_field == last and current_field == player_num:
+                    length += 1
+                elif current_field == player_num:
+                    length = 1
+                else:
+                    length = 0
+                if length == self.n_to_win and last == player_num:
+                    return self.n_to_win
+                elif max_len < length:
+                    max_len = length
+                last = current_field
+            last = 0
+            length = 1
+        return max_len
+
+    def count_diagonals(self, player_num):
+        '''
+        Counts the longest sequence in diagonals of player_num
+        :return: number
+        '''
+        max_len = 0
+        length = 1
+        last = 0
+        for k in range(self.n_rows + self.n_cols - 1):
+            for col_i in range(k + 1):
+                row_i = k - col_i
+                if row_i < self.n_rows and col_i < self.n_cols:
+                    current_field = self.field_content(row_i, col_i)
+                    if current_field == last and current_field == player_num:
+                        length += 1
+                    elif current_field == player_num:
+                        length = 1
+                    else:
+                        length = 0
+                    if last == player_num and length == self.n_to_win:
+                        return self.n_to_win
+                    elif max_len < length:
+                        max_len = length
+                    last = current_field
+            last = 0
+            length = 1
+        for p in range(self.n_rows + self.n_cols - 1):
+            for q in range(p + 1):
+                x = self.n_cols - 1 - q
+                y = p - q
+                if y < self.n_rows and x < self.n_cols and x >= 0 and y >= 0:
+                    current_field = self.field_content(y, x)
+                    if current_field == last and current_field == player_num:
+                        length += 1
+                    elif current_field == player_num:
+                        length = 1
+                    else:
+                        length = 0
+                    if last == player_num and length == self.n_to_win:
+                        return self.n_to_win
+                    elif max_len < length:
+                        max_len = length
+                    last = current_field
+            last = 0
+            length = 1
+        return max_len
+
+    def count_the_longest_line(self, player_num):
+        max = 0
+        seq_len = self.count_rows(player_num)
+        if seq_len == self.n_to_win:
+            return seq_len
+        elif max < seq_len:
+            max = seq_len
+        seq_len = self.count_columns(player_num)
+        if seq_len == self.n_to_win:
+            return seq_len
+        elif max < seq_len:
+            max = seq_len
+        seq_len = self.count_diagonals(player_num)
+        if max < seq_len:
+            max = seq_len
+        return max
+
     def deep_copy(self):
         rc = Board(8, 8, 4)
         rc.whos_turn_is_now = self.whos_turn_is_now
 
+        rc.n_to_win = self.n_to_win
+        rc.n_cols = self.n_cols
+        rc.n_rows = self.n_rows
+        # row 0 is at the bottom
+        # 0  - empty field, 1 - player_1's token, 2 - player_2's token
         # self.board = [[0 for col in range(self.n_cols)] for row in range(self.n_rows)]
         for i in range(self.n_rows):
             for j in range(self.n_cols):
