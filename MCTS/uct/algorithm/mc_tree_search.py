@@ -47,6 +47,7 @@ class MonteCarloTreeSearch:
         if not expansion_possible:
             simulation_result = MonteCarloSimulationResult(state)
             self._backpropagation(promising_node, simulation_result)
+            self.iterations += 1
             return
 
         if promising_node.has_children():
