@@ -160,23 +160,25 @@ class MonteCarloTreeSearch:
         while tmp_node != self.tree.root:
             self.moves_in_iteration.insert(0, tmp_node.move)
             tmp_node.details.mark_visit()
-            for sibling in tmp_node.get_siblings_with_itself():
-                for move_in_iteration in self.moves_in_iteration:
-                    if sibling.move.move_equal(move_in_iteration):
-                        sibling.details.mark_rave_visit()
-                        break
+
+            if self.settings.mcts_variant == Enums.MCTSVariant.RAVE:
+                for sibling in tmp_node.get_siblings_with_itself():
+                    for move_in_iteration in self.moves_in_iteration:
+                        if sibling.move.move_equal(move_in_iteration):
+                            sibling.details.mark_rave_visit()
+                            break
 
             tmp_current_player = tmp_node.move.player
             if leaf_player == tmp_current_player:
                 tmp_node.details.add_score(reward)
 
-                for sibling in tmp_node.get_siblings_with_itself():
-                    for move_in_iteration in self.moves_in_iteration:
-                        if sibling.move.move_equal(move_in_iteration):
-                            sibling.details.add_rave_score(reward)
-                            break
-            #for siblings in tmp_node.get_siblings_with_itself():
-             #   siblings.details.mark_rave_visit(self.moves_in_iteration)
+                if self.settings.mcts_variant == Enums.MCTSVariant.RAVE:
+                    for sibling in tmp_node.get_siblings_with_itself():
+                        for move_in_iteration in self.moves_in_iteration:
+                            if sibling.move.move_equal(move_in_iteration):
+                                sibling.details.add_rave_score(reward)
+                                break
+
             tmp_node = tmp_node.parent
         self.tree.root.details.mark_visit()
 
@@ -216,6 +218,18 @@ class MonteCarloTreeSearch:
                 uct_val = ucb_factor * sqrt(log(p_visit) / visits)
                 return uct_val
 
+        def rave_value(n, p_visit, exp_par, rave_factor):
+            visits = n.details.visits_count
+            if visits == 0:
+                return 10000000
+            win_score = n.details.win_score
+            rave_visits = n.details.rave_visits_count if n.details.rave_visits_count > 0 else 10000000
+            rave_score = n.details.rave_win_score
+            beta = rave_visits / (visits + rave_visits + 4 * rave_factor ** 2 * visits * rave_visits)
+            rave_val = (1 - beta) * (win_score / visits) + beta * (rave_score / rave_visits) + exp_par * sqrt(
+                log(p_visit) / visits)
+            return rave_val
+
         parent_visit = node.details.visits_count
         if self.settings.mcts_variant == Enums.MCTSVariant.UCT:
             best_child_node = max(node.children,
@@ -224,7 +238,9 @@ class MonteCarloTreeSearch:
             best_child_node = max(node.children,
                                   key=lambda n: ucb_tuned_value(n, parent_visit))
         elif self.settings.mcts_variant == Enums.MCTSVariant.RAVE:
-            pass
+            best_child_node = max(node.children,
+                                  key=lambda n: rave_value(n, parent_visit, self.settings.exploration_factor,
+                                                           self.settings.rave_factor))
         else:
             raise Exception('Undefined node selection method')
         return best_child_node
