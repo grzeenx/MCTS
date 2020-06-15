@@ -45,7 +45,6 @@ class MonteCarloNode:
 			None        
 		"""
         child.parent = self
-        # child.vis_details.y = self.vis_details.y + 1
         self.children.append(child)
         child.number = len(self.children)
 
@@ -72,8 +71,6 @@ class MonteCarloNode:
         node.details = MonteCarloNodeDetails()
         node.children = []
         node.parent = None
-        # if move:
-        #     node.details.move_name = move.description
         return node
 
     @staticmethod

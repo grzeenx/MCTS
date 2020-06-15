@@ -7,6 +7,6 @@ class MonteCarloSettings:
     """
     def __init__(self):
         self.max_iterations = 200
-        self.mcts_variant = MCTSVariant.RAVE
+        self.mcts_variant = MCTSVariant.UCT
         self.exploration_factor = 1.41
         self.rave_factor = 1

@@ -1,7 +1,6 @@
 import random
 
 from connect_n.Board import Board
-from MCTS.uct.algorithm.enums import GamePhase
 from MCTS.uct.game.base_game_state import BaseGameState
 from connect_n.algotirhm_relay.connect_n_move import ConnectNMove
 
@@ -41,4 +40,3 @@ class ConnectNState(BaseGameState):
         rc.phase = self.phase
         rc.current_player = self.board.whos_turn_is_now
         return rc
-        # return self.board.players.deepcopy(), self.board.whos_turn_is_now.deepcopy(), self.board.last_move.deepcopy(), self.board.board.deepcopy(), self.board.result.deepcopy()
