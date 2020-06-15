@@ -10,6 +10,8 @@ class MonteCarloNodeDetails:
         self.win_score = 0
         self.average_prize = 0
         self.scores = []
+        self.rave_visits_count = 0
+        self.rave_win_score = 0
 
     def add_score(self, amount):
         """
@@ -33,3 +35,9 @@ class MonteCarloNodeDetails:
 			None        
 		"""
         self.visits_count = self.visits_count + 1
+
+    def mark_rave_visit(self):
+        self.rave_visits_count = self.rave_visits_count + 1
+
+    def add_rave_score(self, amount):
+        self.rave_win_score = self.rave_win_score + amount

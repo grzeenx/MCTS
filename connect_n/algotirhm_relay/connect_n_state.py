@@ -15,27 +15,16 @@ class ConnectNState(BaseGameState):
     def get_all_possible_moves(self):
         possible_moves = []
         for value in self.board.give_possible_moves():
-            possible_moves.append(ConnectNMove(value, self.current_player))
+            possible_moves.append(ConnectNMove(value, self.board.whos_turn_is_now, self.board.find_row(value)))
         return possible_moves
 
     def perform_random_move(self):
-        # get all possible moves and random
-
-        # all_possible_moves = self.get_all_possible_moves()
-        # random_number = RandomUtils.get_random_int(0, len(all_possible_moves))
-        # move = all_possible_moves[random_number]
-        # self.board.perform_move(move[0])
-        # self.switch_current_player()
-        # self.phase = self.board.phase
-        #
-        # possible_moves = self.get_all_possible_moves()
-        # eturn possible_moves[random.randint(0, len(possible_moves) - 1)]
-
         all_possible_moves = self.get_all_possible_moves()
         move = all_possible_moves[random.randint(0, len(all_possible_moves) - 1)]
         self.board.play_human(move.move_number)
         self.switch_current_player()
         self.phase = self.board.phase
+        return move
 
     def apply_moves(self, moves):
         for move in moves:

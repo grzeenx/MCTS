@@ -8,6 +8,6 @@ SCREEN_HEIGHT = 720
 SCREEN_TITLE = "Connect Four"
 
 if __name__ == '__main__':
-    game = ConnectN(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, player_1=None, player_2=HeuristicPlayer())
+    game = ConnectN(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, player_1=None, player_2=Player())
     game.setup()
     game.run()

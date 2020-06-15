@@ -19,6 +19,7 @@ class MonteCarloTreeSearch:
         self.tree = tree
         self.settings = settings
         self.iterations = 0
+        self.moves_in_iteration = []
 
     def calculate_next_move(self) -> (BaseGameMove, BaseGameState):
         """
@@ -105,7 +106,6 @@ class MonteCarloTreeSearch:
 
         if node_state.board.phase != Enums.GamePhase.IN_PROGRESS:
             return False, node_state
-
         for move in possible_moves:
             node.add_child_by_move(move)
 
@@ -127,10 +127,12 @@ class MonteCarloTreeSearch:
         tmp_phase = leaf_state.phase
 
         moves_counter = 0
+        self.moves_in_iteration = []
         while tmp_phase == Enums.GamePhase.IN_PROGRESS:
-            tmp_state.perform_random_move()
+            move = tmp_state.perform_random_move()
             tmp_phase = tmp_state.phase
             moves_counter += 1
+            self.moves_in_iteration.append(move)
         return MonteCarloSimulationResult(tmp_state)
 
     def _backpropagation(self, leaf, simulation_result: MonteCarloSimulationResult):
@@ -156,11 +158,25 @@ class MonteCarloTreeSearch:
 
         tmp_node = leaf
         while tmp_node != self.tree.root:
+            self.moves_in_iteration.insert(0, tmp_node.move)
             tmp_node.details.mark_visit()
-            # TODO
+            for sibling in tmp_node.get_siblings_with_itself():
+                for move_in_iteration in self.moves_in_iteration:
+                    if sibling.move.move_equal(move_in_iteration):
+                        sibling.details.mark_rave_visit()
+                        break
+
             tmp_current_player = tmp_node.move.player
             if leaf_player == tmp_current_player:
                 tmp_node.details.add_score(reward)
+
+                for sibling in tmp_node.get_siblings_with_itself():
+                    for move_in_iteration in self.moves_in_iteration:
+                        if sibling.move.move_equal(move_in_iteration):
+                            sibling.details.add_rave_score(reward)
+                            break
+            #for siblings in tmp_node.get_siblings_with_itself():
+             #   siblings.details.mark_rave_visit(self.moves_in_iteration)
             tmp_node = tmp_node.parent
         self.tree.root.details.mark_visit()
 
@@ -191,15 +207,13 @@ class MonteCarloTreeSearch:
         def ucb_tuned_value(n, p_visit):
             visits = n.details.visits_count
             win_score = n.details.win_score
-            average_prize = n.details.average_prize if self.tree.game_state.current_player == \
-                                                       n.move.player else -n.details.average_prize
             if visits == 0:
                 return 10000000
             else:
                 variance = np.var(n.details.scores)
                 factor = variance + sqrt(2 * log(p_visit) / visits)
                 ucb_factor = sqrt(min(0.25, factor))
-                uct_val = 0*average_prize + ucb_factor * sqrt(log(p_visit) / visits)
+                uct_val = ucb_factor * sqrt(log(p_visit) / visits)
                 return uct_val
 
         parent_visit = node.details.visits_count
