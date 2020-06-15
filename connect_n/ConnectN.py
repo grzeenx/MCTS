@@ -1,5 +1,7 @@
 import os
 import arcade
+import pyglet
+
 import MCTS
 from connect_n.Board import Board
 from connect_n.Player import Player
@@ -10,7 +12,10 @@ class ConnectN(arcade.Window):
 
     def __init__(self, width, height, title, player_1=None, player_2=None):
         super().__init__(width, height, title)
+        self.center_window()
         self.board = Board(8, 8, 4, player_1, player_2)
+
+
         arcade.set_background_color(arcade.color.BLUE_BELL)
 
         self.image_paths = [os.path.join("connect_n", "graphics", "field.jpg"),
@@ -26,6 +31,27 @@ class ConnectN(arcade.Window):
         self.game_over = False
         self.move = None
         self.chosen_col_id = 0
+
+    def center_window(self):
+        """
+        Taken from arcade docs to center the window
+        Center the window on the screen.
+        """
+        # Get the display screen using pyglet
+        screen_width, screen_height = self.get_display_size()
+
+        window_width, window_height = self.get_size()
+        # Center the window
+        self.set_location((screen_width - window_width) // 2, (screen_height - window_height) // 2)
+
+    def get_display_size(self):
+        """
+        Taken from arcade docs to get_display_size
+         Return the resolution of the monitor
+         """
+        display = pyglet.canvas.Display()
+        screen = display.get_default_screen()
+        return screen.width, screen.height
 
     def setup(self):
 
