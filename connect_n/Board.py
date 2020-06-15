@@ -305,7 +305,7 @@ class Board:
         return max
 
     def deep_copy(self):
-        rc = Board(8, 8, 4)
+        rc = Board(6, 7, 4)
         rc.whos_turn_is_now = self.whos_turn_is_now
 
         rc.n_to_win = self.n_to_win

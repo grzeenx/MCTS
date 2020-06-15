@@ -13,8 +13,7 @@ class ConnectN(arcade.Window):
     def __init__(self, width, height, title, player_1=None, player_2=None):
         super().__init__(width, height, title)
         self.center_window()
-        self.board = Board(8, 8, 4, player_1, player_2)
-
+        self.board = Board(6, 7, 4, player_1, player_2)
 
         arcade.set_background_color(arcade.color.BLUE_BELL)
 
@@ -31,6 +30,7 @@ class ConnectN(arcade.Window):
         self.game_over = False
         self.move = None
         self.chosen_col_id = 0
+        self.help_coin = None
 
     def center_window(self):
         """
@@ -54,11 +54,12 @@ class ConnectN(arcade.Window):
         return screen.width, screen.height
 
     def setup(self):
-
-        self.help_coin = arcade.Sprite(self.image_paths[1], self.SPRITE_SCALING_COIN)
-        self.help_coin.alpha = 100
-        self.help_coin.center_y = self.board.n_rows * self.field_height
-        self.help_coin.center_x = self.field_width / 2
+        if not self.board.players[0] or not self.board.players[1]:
+            image_path = self.image_paths[1] if not self.board.players[0] else self.image_paths[2]
+            self.help_coin = arcade.Sprite(image_path, self.SPRITE_SCALING_COIN)
+            self.help_coin.alpha = 100
+            self.help_coin.center_y = self.board.n_rows * self.field_height
+            self.help_coin.center_x = self.field_width / 2
 
         self.field_list = arcade.SpriteList()
         for i in range(self.board.n_rows):
@@ -75,7 +76,8 @@ class ConnectN(arcade.Window):
         arcade.start_render()
         self.field_list.draw()
         self.token_list.draw()
-        self.help_coin.draw()
+        if self.help_coin:
+            self.help_coin.draw()
         # print score
         self.output = f"PLAYER {self.board.result} WON!" if self.game_over else ""
         arcade.draw_text(self.output, (self.board.n_cols / 2 - 0.5) * self.field_width,
@@ -84,12 +86,13 @@ class ConnectN(arcade.Window):
     def update(self, delta_time):
         """ All the logic to move, and the game logic goes here. """
         # help coin
-        self.help_coin.center_x = self.field_width * (self.chosen_col_id + 0.5)
-        self.help_coin.center_y = self.board.find_row(
-            self.chosen_col_id) * self.field_height + self.field_height / 2 if self.board.find_row(
-            self.chosen_col_id) < self.board.n_rows else -10000
+        if self.help_coin:
+            self.help_coin.center_x = self.field_width * (self.chosen_col_id + 0.5)
+            self.help_coin.center_y = self.board.find_row(
+                self.chosen_col_id) * self.field_height + self.field_height / 2 if self.board.find_row(
+                self.chosen_col_id) < self.board.n_rows else -10000
 
-        if self.game_over:
+        if self.game_over and self.help_coin:
             self.help_coin.alpha = 0
 
         if not self.game_over:
