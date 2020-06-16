@@ -20,7 +20,7 @@ class HeuristicPlayer(Player):
             score = self.evaluate(board, move, who_plays)
             if score > max_score_move[0]:
                 max_score_move = (score, move)
-        sleep(1)
+        # sleep(1)
         return max_score_move[1]
 
     def evaluate(self, board, move, who_plays):

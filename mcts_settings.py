@@ -6,7 +6,7 @@ class MonteCarloSettings:
     Class is responsible for Monte Carlo algorithm settings.
     """
     def __init__(self):
-        self.max_iterations = 400
-        self.mcts_variant = MCTSVariant.UCT
+        self.max_iterations = 500
+        self.mcts_variant = MCTSVariant.UCB1_Tuned
         self.exploration_factor = 1.41
         self.rave_factor = 1

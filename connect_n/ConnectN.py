@@ -6,6 +6,7 @@ import MCTS
 from connect_n.Board import Board
 from connect_n.Player import Player
 
+from MCTS.uct.algorithm.enums import GamePhase
 
 class ConnectN(arcade.Window):
     """ Main application class. """
@@ -79,9 +80,9 @@ class ConnectN(arcade.Window):
         if self.help_coin:
             self.help_coin.draw()
         # print score
-        self.output = f"PLAYER {self.board.result} WON!" if self.game_over else ""
-        arcade.draw_text(self.output, (self.board.n_cols / 2 - 0.5) * self.field_width,
-                         (self.board.n_rows) * self.field_height, arcade.color.RED, 14, bold=True)
+        # self.output = f"PLAYER {self.board.result} WON!" if self.game_over else ""
+        # arcade.draw_text(self.output, (self.board.n_cols / 2 - 0.5) * self.field_width,
+        #                  (self.board.n_rows) * self.field_height, arcade.color.RED, 14, bold=True)
 
     def update(self, delta_time):
         """ All the logic to move, and the game logic goes here. """
@@ -114,7 +115,8 @@ class ConnectN(arcade.Window):
                 token.center_y = self.board.last_move[0] * self.field_height + self.field_height / 2
                 self.token_list.append(token)
                 self.move = None
-
+        if self.board.phase != GamePhase.IN_PROGRESS:
+            self.close()
     def on_key_release(self, key, modifiers):
         """Called when the user releases a key. """
         if self.board.active_player() is None:
