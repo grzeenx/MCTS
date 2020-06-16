@@ -1,5 +1,6 @@
 from MCTS.uct.algorithm.mc_node_details import MonteCarloNodeDetails
 
+
 class MonteCarloNode:
     """
     Class is responsible for storing information about a single node in Monte Carlo tree.
@@ -44,7 +45,6 @@ class MonteCarloNode:
 			None        
 		"""
         child.parent = self
-        # child.vis_details.y = self.vis_details.y + 1
         self.children.append(child)
         child.number = len(self.children)
 
@@ -71,8 +71,6 @@ class MonteCarloNode:
         node.details = MonteCarloNodeDetails()
         node.children = []
         node.parent = None
-        # if move:
-        #     node.details.move_name = move.description
         return node
 
     @staticmethod
@@ -83,3 +81,6 @@ class MonteCarloNode:
 		"""
         MonteCarloNode._node_counter = MonteCarloNode._node_counter + 1
         return MonteCarloNode._node_counter
+
+    def get_siblings_with_itself(self):
+        return self.parent.children if self.parent else []

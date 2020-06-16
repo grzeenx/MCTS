@@ -1,4 +1,5 @@
 from math import sqrt, log
+import numpy as np
 
 import MCTS.uct.algorithm.enums as Enums
 import MCTS.uct.algorithm.mc_node_utils as NodeUtils
@@ -18,6 +19,7 @@ class MonteCarloTreeSearch:
         self.tree = tree
         self.settings = settings
         self.iterations = 0
+        self.moves_in_iteration = []
 
     def calculate_next_move(self) -> (BaseGameMove, BaseGameState):
         """
@@ -45,6 +47,7 @@ class MonteCarloTreeSearch:
         if not expansion_possible:
             simulation_result = MonteCarloSimulationResult(state)
             self._backpropagation(promising_node, simulation_result)
+            self.iterations += 1
             return
 
         if promising_node.has_children():
@@ -104,7 +107,6 @@ class MonteCarloTreeSearch:
 
         if node_state.board.phase != Enums.GamePhase.IN_PROGRESS:
             return False, node_state
-
         for move in possible_moves:
             node.add_child_by_move(move)
 
@@ -126,10 +128,12 @@ class MonteCarloTreeSearch:
         tmp_phase = leaf_state.phase
 
         moves_counter = 0
+        self.moves_in_iteration = []
         while tmp_phase == Enums.GamePhase.IN_PROGRESS:
-            tmp_state.perform_random_move()
+            move = tmp_state.perform_random_move()
             tmp_phase = tmp_state.phase
             moves_counter += 1
+            self.moves_in_iteration.append(move)
         return MonteCarloSimulationResult(tmp_state)
 
     def _backpropagation(self, leaf, simulation_result: MonteCarloSimulationResult):
@@ -155,11 +159,27 @@ class MonteCarloTreeSearch:
 
         tmp_node = leaf
         while tmp_node != self.tree.root:
+            self.moves_in_iteration.insert(0, tmp_node.move)
             tmp_node.details.mark_visit()
-            # TODO
+
+            if self.settings.mcts_variant == Enums.MCTSVariant.RAVE:
+                for sibling in tmp_node.get_siblings_with_itself():
+                    for move_in_iteration in self.moves_in_iteration:
+                        if sibling.move.move_equal(move_in_iteration):
+                            sibling.details.mark_rave_visit()
+                            break
+
             tmp_current_player = tmp_node.move.player
             if leaf_player == tmp_current_player:
                 tmp_node.details.add_score(reward)
+
+                if self.settings.mcts_variant == Enums.MCTSVariant.RAVE:
+                    for sibling in tmp_node.get_siblings_with_itself():
+                        for move_in_iteration in self.moves_in_iteration:
+                            if sibling.move.move_equal(move_in_iteration):
+                                sibling.details.add_rave_score(reward)
+                                break
+
             tmp_node = tmp_node.parent
         self.tree.root.details.mark_visit()
 
@@ -182,10 +202,46 @@ class MonteCarloTreeSearch:
             average_prize = n.details.average_prize if self.tree.game_state.current_player == \
                                                        n.move.player else -n.details.average_prize
             if visits == 0:
-                return 10000000  # TODO: won't 2 be enough?
+                return 10000000
             else:
                 uct_val = average_prize + exp_par * sqrt(log(p_visit) / visits)
                 return uct_val
 
+        def ucb_tuned_value(n, p_visit):
+            visits = n.details.visits_count
+            win_score = n.details.win_score
+            if visits == 0:
+                return 10000000
+            else:
+                variance = np.var(n.details.scores)
+                factor = variance + sqrt(2 * log(p_visit) / visits)
+                ucb_factor = sqrt(min(0.25, factor))
+                uct_val = ucb_factor * sqrt(log(p_visit) / visits)
+                return uct_val
+
+        def rave_value(n, p_visit, exp_par, rave_factor):
+            visits = n.details.visits_count
+            if visits == 0:
+                return 10000000
+            win_score = n.details.win_score
+            rave_visits = n.details.rave_visits_count if n.details.rave_visits_count > 0 else 10000000
+            rave_score = n.details.rave_win_score
+            beta = rave_visits / (visits + rave_visits + 4 * rave_factor ** 2 * visits * rave_visits)
+            rave_val = (1 - beta) * (win_score / visits) + beta * (rave_score / rave_visits) + exp_par * sqrt(
+                log(p_visit) / visits)
+            return rave_val
+
         parent_visit = node.details.visits_count
-        return max(node.children, key=lambda n: uct_value(n, parent_visit, self.settings.exploration_factor))
+        if self.settings.mcts_variant == Enums.MCTSVariant.UCT:
+            best_child_node = max(node.children,
+                                  key=lambda n: uct_value(n, parent_visit, self.settings.exploration_factor))
+        elif self.settings.mcts_variant == Enums.MCTSVariant.UCB1_Tuned:
+            best_child_node = max(node.children,
+                                  key=lambda n: ucb_tuned_value(n, parent_visit))
+        elif self.settings.mcts_variant == Enums.MCTSVariant.RAVE:
+            best_child_node = max(node.children,
+                                  key=lambda n: rave_value(n, parent_visit, self.settings.exploration_factor,
+                                                           self.settings.rave_factor))
+        else:
+            raise Exception('Undefined node selection method')
+        return best_child_node

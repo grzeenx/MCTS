@@ -8,6 +8,12 @@ class GamePhase(Enum):
     DRAW = 4
 
 
+class MCTSVariant(Enum):
+    UCT = 1,
+    UCB1_Tuned = 2,
+    RAVE = 3
+
+
 def get_player_win(player):
     """
 		Args:

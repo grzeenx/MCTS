@@ -1,3 +1,4 @@
+from time import sleep
 from MCTS.uct.algorithm.enums import GamePhase
 from connect_n.Player import Player
 from connect_n.Board import Board
@@ -19,6 +20,7 @@ class HeuristicPlayer(Player):
             score = self.evaluate(board, move, who_plays)
             if score > max_score_move[0]:
                 max_score_move = (score, move)
+        sleep(1)
         return max_score_move[1]
 
     def evaluate(self, board, move, who_plays):
