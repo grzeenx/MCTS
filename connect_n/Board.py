@@ -192,9 +192,10 @@ class Board:
     def count_rows(self, player_num):
         '''
         Counts the longest sequence in rows of player_num
-        :return: number
+        :return: number, free spots netxt to the line
         '''
-        max_len = 0
+        max_len_free_spots = (0, 0)
+        free_before = False
         length = 1
         last = 0
         for row in self.board:
@@ -203,23 +204,41 @@ class Board:
                     length += 1
                 elif field == player_num:
                     length = 1
-                else:
+                elif field == 0:
+                    if max_len_free_spots[0] < length:
+                        max_len_free_spots = (length, 2 if free_before else 1)
+                    elif max_len_free_spots[1] < 2 and max_len_free_spots[0] == length:
+                        # if free is 1 it  wont be worse, cannot be 0
+                        max_len_free_spots = (length, 2 if free_before else 1)
                     length = 0
-                if last == player_num and length == self.n_to_win:
-                    return self.n_to_win
-                elif max_len < length:
-                    max_len = length
+                    free_before = True
+                else:
+                    # if the token is opponent's
+                    if free_before and max_len_free_spots[0] < length:
+                        max_len_free_spots = (length, 1)
+                    length = 0
+                    free_before = False
+                if field==player_num and length == self.n_to_win:
+                    return self.n_to_win, 0
                 last = field
+
+            if max_len_free_spots[0] < length:
+                if free_before:
+                    max_len_free_spots = (length, 1)
+
             last = 0
             length = 1
-        return max_len
+            free_before = False
+        return max_len_free_spots
+
 
     def count_columns(self, player_num):
         '''
         Counts the longest sequence in columns of player_num
-        :return: number
+        :return: number, free spots around the sequence
         '''
-        max_len = 0
+        max_len_free_spots = (0, 0)
+        free_before = False
         length = 1
         last = 0
         for col_i in range(self.n_cols):
@@ -229,23 +248,39 @@ class Board:
                     length += 1
                 elif current_field == player_num:
                     length = 1
-                else:
+                elif current_field==0:
+                    if max_len_free_spots[0] < length:
+                        max_len_free_spots = (length, 2 if free_before else 1)
+                    elif max_len_free_spots[1] < 2 and max_len_free_spots[0] == length:
+                        # if free is 1 it  wont be worse, cannot be 0
+                        max_len_free_spots = (length, 2 if free_before else 1)
                     length = 0
-                if length == self.n_to_win and last == player_num:
-                    return self.n_to_win
-                elif max_len < length:
-                    max_len = length
+                    free_before = True
+                else:
+                    # if the token is opponent's
+                    if free_before and max_len_free_spots[0] < length:
+                        max_len_free_spots = (length, 1)
+                    length=0
+                    free_before =False
+                if current_field==player_num and length == self.n_to_win:
+                    return self.n_to_win,0
                 last = current_field
+
+            if max_len_free_spots[0] < length:
+                if free_before:
+                    max_len_free_spots = (length, 1)
             last = 0
             length = 1
-        return max_len
+            free_before=False
+        return max_len_free_spots
 
     def count_diagonals(self, player_num):
         '''
         Counts the longest sequence in diagonals of player_num
         :return: number
         '''
-        max_len = 0
+        max_len_free_spots = (0, 0)
+        free_before = False
         length = 1
         last = 0
         for k in range(self.n_rows + self.n_cols - 1):
@@ -257,15 +292,31 @@ class Board:
                         length += 1
                     elif current_field == player_num:
                         length = 1
-                    else:
+                    elif current_field==0:
+                        if max_len_free_spots[0] < length:
+                            max_len_free_spots = (length, 2 if free_before else 1)
+                        elif max_len_free_spots[1] < 2 and max_len_free_spots[0] == length:
+                            # if free is 1 it  wont be worse, cannot be 0
+                            max_len_free_spots = (length, 2 if free_before else 1)
+
                         length = 0
-                    if last == player_num and length == self.n_to_win:
-                        return self.n_to_win
-                    elif max_len < length:
-                        max_len = length
+                        free_before = True
+                    else:
+                        # if the token is opponent's
+                        if free_before and max_len_free_spots[0] < length:
+                            max_len_free_spots = (length, 1)
+                        length=0
+                        free_before =False
+                    if current_field == player_num and length == self.n_to_win:
+                        return self.n_to_win,0
+
                     last = current_field
+            if max_len_free_spots[0] < length:
+                if free_before:
+                    max_len_free_spots = (length, 1)
             last = 0
             length = 1
+            free_before=False
         for p in range(self.n_rows + self.n_cols - 1):
             for q in range(p + 1):
                 x = self.n_cols - 1 - q
@@ -276,32 +327,54 @@ class Board:
                         length += 1
                     elif current_field == player_num:
                         length = 1
-                    else:
+                    elif current_field == 0:
+                        if max_len_free_spots[0] < length:
+                            max_len_free_spots = (length, 2 if free_before else 1)
+                        elif max_len_free_spots[1] < 2 and max_len_free_spots[0] == length:
+                            # if free is 1 it  wont be worse, cannot be 0
+                            max_len_free_spots = (length, 2 if free_before else 1)
+
                         length = 0
-                    if last == player_num and length == self.n_to_win:
-                        return self.n_to_win
-                    elif max_len < length:
-                        max_len = length
+                        free_before=True
+                    else:
+                        # if the token is opponent's
+                        if free_before and max_len_free_spots[0] < length:
+                            max_len_free_spots = (length, 1)
+                        length = 0
+                        free_before=False
+                    if current_field == player_num and length == self.n_to_win:
+                        return self.n_to_win,0
+
                     last = current_field
+            if max_len_free_spots[0] < length:
+                if free_before:
+                    max_len_free_spots = (length, 1)
             last = 0
             length = 1
-        return max_len
+            free_before=False
+        return max_len_free_spots
 
     def count_the_longest_line(self, player_num):
-        max = 0
-        seq_len = self.count_rows(player_num)
+        max = (0,0)
+        seq_len, free = self.count_rows(player_num)
         if seq_len == self.n_to_win:
-            return seq_len
-        elif max < seq_len:
-            max = seq_len
-        seq_len = self.count_columns(player_num)
+            return seq_len, free
+        elif max[0] < seq_len:
+            max = (seq_len, free)
+        elif free == 2 and max[0]==seq_len:
+            max= (seq_len, free)
+        seq_len,free = self.count_columns(player_num)
         if seq_len == self.n_to_win:
-            return seq_len
-        elif max < seq_len:
-            max = seq_len
-        seq_len = self.count_diagonals(player_num)
-        if max < seq_len:
-            max = seq_len
+            return seq_len, free
+        elif max[0] < seq_len:
+            max = (seq_len,free)
+        elif free == 2 and max[0]==seq_len:
+            max= (seq_len, free)
+        seq_len,free = self.count_diagonals(player_num)
+        if max[0] < seq_len:
+            max = (seq_len,free)
+        elif free == 2 and max[0]==seq_len:
+            max= (seq_len, free)
         return max
 
     def deep_copy(self):
