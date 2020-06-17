@@ -15,10 +15,12 @@ GAMES_NUM = 10
 if __name__ == '__main__':
     with open("results.txt", 'a') as file:
         settings = MonteCarloSettings()
-        file.write(f"Heuristic vs AI max_iter:{settings.max_iterations}, variant:{settings.mcts_variant} \n")
+        # file.write(f"Heuristic vs AI max_iter:{settings.max_iterations}, variant:{settings.mcts_variant} \n")
+        # file.write(f"Heuristic vs Random \n")
+        file.write(f"Random vs AI max_iter:{settings.max_iterations}, variant:{settings.mcts_variant} \n")
         ai_scores = []
         for i in range(GAMES_NUM):
-            game = ConnectN(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, player_1=HeuristicPlayer(), player_2=AIPlayer())
+            game = ConnectN(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, player_1=RandomPlayer(), player_2=AIPlayer())
             game.setup()
             game.run()
 
@@ -31,10 +33,12 @@ if __name__ == '__main__':
                 ai_scores.append(1)
 
         file.write(str(ai_scores) + '\n')
-        file.write(f"AI max_iter:{settings.max_iterations}, variant:{settings.mcts_variant} vs Heuristic \n")
+        # file.write(f"AI max_iter:{settings.max_iterations}, variant:{settings.mcts_variant} vs Heuristic \n")
+        # file.write(f"Random vs Heuristic\n")
+        file.write(f"AI max_iter:{settings.max_iterations}, variant:{settings.mcts_variant} vs Random \n")
         ai_scores=[]
         for i in range(GAMES_NUM):
-            game = ConnectN(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, player_1=AIPlayer(), player_2=HeuristicPlayer())
+            game = ConnectN(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, player_1=AIPlayer(), player_2=RandomPlayer())
             game.setup()
             game.run()
             result = game.board.result

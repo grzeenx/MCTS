@@ -46,3 +46,56 @@ Heuristic vs AI max_iter:500, variant:MCTSVariant.UCB1_Tuned
 [1, 0, 0, 0, 1, 1, 1, 1, 0, 0]
 AI max_iter:500, variant:MCTSVariant.UCB1_Tuned vs Heuristic 
 [1, 1, 1, 1, 1, 1, 1, 1, 0, 0]
+Heuristic vs Random 
+[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+Random vs Heuristic
+[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+Random vs AI max_iter:30, variant:MCTSVariant.UCT 
+[0, 1, 1, 0, 1, 1, 1, 1, 1, 1]
+AI max_iter:30, variant:MCTSVariant.UCT vs Random 
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Random vs AI max_iter:30, variant:MCTSVariant.RAVE 
+[1, 1, 1, 1, 1, 1, 1, 0, 1, 1]
+AI max_iter:30, variant:MCTSVariant.RAVE vs Random 
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Random vs AI max_iter:30, variant:MCTSVariant.UCB1_Tuned 
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 0]
+AI max_iter:30, variant:MCTSVariant.UCB1_Tuned vs Random 
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Random vs AI max_iter:150, variant:MCTSVariant.UCT 
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+AI max_iter:150, variant:MCTSVariant.UCT vs Random 
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Random vs AI max_iter:150, variant:MCTSVariant.RAVE 
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+AI max_iter:150, variant:MCTSVariant.RAVE vs Random 
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Random vs AI max_iter:150, variant:MCTSVariant.UCB1_Tuned 
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+AI max_iter:150, variant:MCTSVariant.UCB1_Tuned vs Random 
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Random vs AI max_iter:300, variant:MCTSVariant.UCT
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+AI max_iter:300, variant:MCTSVariant.UCT vs Random
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Random vs AI max_iter:300, variant:MCTSVariant.RAVE
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+AI max_iter:300, variant:MCTSVariant.RAVE vs Random
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Random vs AI max_iter:300, variant:MCTSVariant.UCB1_Tuned
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+AI max_iter:300, variant:MCTSVariant.UCB1_Tuned vs Random
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Random vs AI max_iter:500, variant:MCTSVariant.UCT
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+AI max_iter:500, variant:MCTSVariant.UCT vs Random
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Random vs AI max_iter:500, variant:MCTSVariant.RAVE
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+AI max_iter:500, variant:MCTSVariant.RAVE vs Random
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Random vs AI max_iter:500, variant:MCTSVariant.UCB1_Tuned
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+AI max_iter:500, variant:MCTSVariant.UCB1_Tuned vs Random
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+
